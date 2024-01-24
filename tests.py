@@ -1,5 +1,5 @@
 import pytest
-
+from main import BooksCollector
 
 # класс TestBooksCollector объединяет набор тестов, которыми мы покрываем наше приложение BooksCollector
 # обязательно указывать префикс Test
@@ -23,8 +23,7 @@ class TestBooksCollector:
         # словарь books_rating, который нам возвращает метод get_books_rating, имеет длину 2
         # assert len(collector.get_books_rating()) == 2
         # косяк в примере, нет такого метода и словаря
-
-        assert len(collector.books_genre) == 2
+        assert len(collector.get_books_genre()) == 2
 
     # напиши свои тесты ниже
     # чтобы тесты были независимыми в каждом из них создавай отдельный экземпляр класса BooksCollector()
@@ -33,36 +32,31 @@ class TestBooksCollector:
         with pytest.raises(Exception):
             collector.add_new_book(123)
 
-    @staticmethod
-    def check_name(name_book):
-        if len(name_book) < 1 or len(name_book) > 40:
-            return False
-        return True
-
     @pytest.mark.parametrize("name_book",
                              [
                                  "1",
                                  "123456789012345678901234567890123456789",
                                  "1234567890123456789012345678901234567890"
                              ])
-    def test_add_new_book_with_name_book(self, name_book):
-        assert self.check_name(name_book)
+    def test_length_name_book_from_1_to_40_not_empty_result(self, name_book):
+        collector = BooksCollector()
+        assert collector.add_new_book(name_book) != ""
 
     def test_add_new_book_without_name_null_result(self, collector):
         collector.add_new_book("")
 
-        assert len(collector.books_genre) == 0
+        assert len(collector.get_books_genre()) == 0
 
     def test_add_new_book_41_number_null_result(self, collector):
         collector.add_new_book("12345678901234567890123456789012345678901")
 
-        assert len(collector.books_genre) == 0
+        assert len(collector.get_books_genre()) == 0
 
     def test_add_book_twice_one_book_in_result(self, collector):
         collector.add_new_book("probe")
         collector.add_new_book("probe")
 
-        assert len(collector.books_genre) == 1
+        assert len(collector.get_books_genre()) == 1
 
     # set_book_genre()
 
@@ -70,25 +64,25 @@ class TestBooksCollector:
         collector.add_new_book("probe")
         collector.set_book_genre("probe", "Ужасы")
 
-        assert list(collector.books_genre.values())[0] == "Ужасы"
+        assert list(collector.get_books_genre().values())[0] == "Ужасы"
 
     def test_add_book_set_genre_not_in_list_genre_not_add(self, collector):
         collector.add_new_book("probe")
         collector.set_book_genre("probe", "Ужасы1")
 
-        assert list(collector.books_genre.values())[0] == ""
+        assert list(collector.get_books_genre().values())[0] == ""
 
     def test_add_book_set_genre_wrong_book_genre_not_add(self, collector):
         collector.add_new_book("probe")
         collector.set_book_genre("probe1", "Ужасы")
 
-        assert list(collector.books_genre.values())[0] == ""
+        assert list(collector.get_books_genre().values())[0] == ""
 
     def test_add_book_set_wrong_genre_in_wrong_book_genre_not_add(self, collector):
         collector.add_new_book("probe")
         collector.set_book_genre("probe1", "Ужасы1")
 
-        assert list(collector.books_genre.values())[0] == ""
+        assert list(collector.get_books_genre().values())[0] == ""
 
     # get_book_genre()
 
@@ -113,6 +107,7 @@ class TestBooksCollector:
         assert collector.get_books_with_specific_genre("Ужасы") == ["probe"]
 
     def test_get_books_with_spec_genre_nonexist_book_exist_genre_genre_not_add(self, collector):
+
         assert collector.get_books_with_specific_genre("Ужасы") == []
 
     # get_books_genre()
